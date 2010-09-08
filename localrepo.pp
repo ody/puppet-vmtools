@@ -9,7 +9,7 @@
 # All package patterns in each local repo need to currently be with in the
 # same resource.  This is due to the method of retrieving and cleaning
 # up packages; each resource delaration is going to issues a `rsync
-# --delete` with means that you will only get package from the final
+# --delete` with means that you will only get packages from the final
 # resource that runs.  Suboptimal, yes and I think I am going to solve
 # this with a ruby manifest at some point.
 #
@@ -35,6 +35,13 @@ define pkgsync ($pkglist = $name, $source, $server = "mirrors.cat.pdx.edu", $syn
     notify   => Exec["get_${name}"],
   }
 
+  file { [ "${repopath}", "${repopath}/RPMS" ]:
+    ensure => directory,
+    mode   => 644,
+    owner  => puppet,
+    group  => puppet,
+  }
+
   exec { "get_${name}":
     command => "${syncer} ${syncops} --include-from=/tmp/${name}list  --exclude=* ${server}${source} ${repopath}/RPMS",
     user    => puppet,
@@ -52,7 +59,7 @@ define repobuild ($repopath, $repoer = "createrepo", $repoops = "-C --update -p"
     command     => "${repoer} ${repoops} ${repopath}",
     user        => puppet,
     group       => puppet,
-    path        => "/usr/bin:/vin",
+    path        => "/usr/bin:/bin",
     refreshonly => true,
   }
 
@@ -60,55 +67,56 @@ define repobuild ($repopath, $repoer = "createrepo", $repoops = "-C --update -p"
 
 class localpm {
 
-$base = "/var/yum"
+  $base = "/var/yum"
 
-$directories = [ "${base}",
-                 "${base}/mirror",
-                 "${base}/mirror/epel",
-                 "${base}/mirror/epel/5",
-                 "${base}/mirror/epel/5/local",
-                 "${base}/mirror/epel/5/local/i386",
-                 "${base}/mirror/epel/5/local/i386/RPMS", 
-                 "${base}/mirror/centos", 
-                 "${base}/mirror/centos/5",
-                 "${base}/mirror/centos/5/os", 
-                 "${base}/mirror/centos/5/os/i386",
-                 "${base}/mirror/centos/5/os/i386/RPMS", 
-                 "${base}/mirror/centos/5/updates",
-                 "${base}/mirror/centos/5/updates/i386",
-                 "${base}/mirror/centos/5/updates/i386/RMPS", ]
+  $directories = [ "${base}",
+                   "${base}/mirror",
+                   "${base}/mirror/epel",
+                   "${base}/mirror/epel/5",
+                   "${base}/mirror/epel/5/local",
+                   "${base}/mirror/centos",
+                   "${base}/mirror/centos/5",
+                   "${base}/mirror/centos/5/os",
+                   "${base}/mirror/centos/5/updates",
 
-File { mode => 644, owner => puppet, group => puppet }
+  File { mode => 644, owner => puppet, group => puppet }
 
-file { $directories:
-  ensure => directory,
-  recurse => true,
+  file { $directories:
+    ensure => directory,
+    recurse => true,
+  }
+
+  pkgsync { "base_pkgs":
+    pkglist  => "httpd*\nperl-DBI*\nlibart_lgpl*\napr*\nruby-rdoc*\nntp*\n",
+    repopath => "${base}/mirror/centos/5/os/i386",
+    source   => "::centos/5/os/i386/CentOS/",
+    notify   => Repobuild["base_local"]
+  }
+
+  repobuild { "base_local":
+    repopath => "${base}/mirror/centos/5/os/i386",
+  }
+
+  pkgsync { "updates_pkgs":
+    pkglist  => "mysql*\npostgresql-libs*\n",
+    repopath => "${base]/mirror/centos/5/updates/i386",
+    source   => "::centos/5/updates/i386/RPMS/",
+    notify   => Repobuild["updates_local"]
+  }
+
+  repobuild { "updates_local":
+    repopatch => "${base}/mirror/centos/5/updates/i386",
+  }
+
+  pkgsync { "epel_pkgs":
+    pkglist  => "rubygems*\nrubygem-rake*\nruby-RRDtool*\nrrdtool-ruby*\nrubygem-sqlite3-ruby*\nrubygem-rails*\nrubygem-activesupport*\nrubygem-actionmailer*\nrubygem-activeresource*\nrubygem-actionpack*\nrubygem-activerecord*\n",
+    repopath => "${base]/mirror/epel/5/local/i386",
+    source   => "::epel/5/i386/",
+    notify   => Repobuild["epel_local"]
+  }
+
+  repobuild { "epal_local":
+    repopatch => "${base}/mirror/epel/5/local/i386",
+  }
+
 }
-
-Exec {
-  user    => puppet,
-  group   => puppet,
-  path    => "/usr/bin:/bin",
-}
-
-pkgsync { "base_pkgs":
-  pkglist  => "httpd*\nperl-DBI*\nlibart_lgpl*\napr*\nruby-rdoc*\nntp*\n",
-  repopath => "${base}/mirror/centos/5/os/i386",
-  source   => "::centos/5/os/i386/CentOS/",
-  notify   => Repobuild["base"]
-}
-
-repobuild { "base":
-  repopath => "${base}/mirror/centos/5/os/i386",
-}
-
-}
-
-#exec {
-#  "get_base":
-#    cmd => "${syncops}::centos/5/os/i386/CentOS/ --include-from=${base}/ref/ospkgs.txt ${base}/mirror/centos/5/os/i386/RPMS && ${repoops} ${base}/mirror/centos/5/os/i386";
-#  "get_updates":
-#    cmd => "${syncops}::centos/5/updates/i386/RPMS/ --include-from=${base}/ref/updatespkgs.txt ${base}/mirror/centos/5/updates/i386/RPMS && ${repoops} ${base}/mirror/centos/5/updates/i386";
-#  "get_epel":
-#    cmd => "${syncops}::epel/5/i386/ --include-from=${base}/ref/epelpkgs.txt ${base}/mirror/epel/5/local/i386/RPMS && ${repoops} ${base}/mirror/epel/5/local/i386";
-#}
