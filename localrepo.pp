@@ -86,7 +86,7 @@ class localpm {
                    "${base}/mirror/puppetlabs",
                    "${base}/mirror/puppetlabs/local",
                    "${base}/mirror/puppetlabs/local/base",
-                   "${base}/mirror/puppetlabs/local/base/i386",
+                   "${base}/mirror/puppetlabs/local/base/i386", ]
 
   File { mode => 644, owner => puppet, group => puppet }
 
@@ -140,5 +140,6 @@ class localpm {
     repopath => "${base}/mirror/puppetlabs/local/base/i386",
   }
 
-
 }
+
+include localpm
