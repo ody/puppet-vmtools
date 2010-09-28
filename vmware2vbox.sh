@@ -1,13 +1,19 @@
 #!/bin/bash
 
-OVFFILE=`ls ${PWD} | grep \.ovf$`
-MFFILE=`ls ${PWD} | grep \.mf$`
+set -e
+set -u
+
 PATCHBIN=${PATCHBIN:='/usr/bin/patch'}
 OSSLBIN=${OSSLBIN:='/opt/local/bin/openssl'}
 SEDBIN=${SEDBIN:='/usr/bin/sed'}
+OVFTOOL=${OVFTOOL:='/opt/vmware/ovftool/ovftool'}
+OVFOPS=${OVFOPS:='-dm=monolithicSparse'}
+OSVER=${OSVER:='5.5'}
+OSDIST=${OSDIST:='centos'}
+PUPPETVER=${PUPPETVER:='2.6.1'}
 
-PATCH='--- centos-5.5-0.25.5.ovf       2010-08-27 12:11:48.000000000 -0700
-+++ centos-5.5-0.25.5-edit.ovf  2010-08-27 12:14:38.000000000 -0700
+PATCH='--- CentOS-min.ovf       2010-08-27 12:11:48.000000000 -0700
++++ CentOS-min-edit.ovf  2010-08-27 12:14:38.000000000 -0700
 @@ -14,11 +14,12 @@
        <Description>The nat network</Description>
      </Network>
@@ -30,6 +36,11 @@ PATCH='--- centos-5.5-0.25.5.ovf       2010-08-27 12:11:48.000000000 -0700
 -</Envelope>
 \ No newline at end of file
 +</Envelope>'
+
+${OVFTOOL} ${OVFOPS} ../${OSDIST}-${OSVER}-${PUPPETVER}/CentOS-min.vmx ${PWD}/CentOS-min.ovf
+
+OVFFILE=`ls ${PWD} | grep \.ovf$`
+MFFILE=`ls ${PWD} | grep \.mf$`
 
 ${PATCHBIN} ${OVFFILE} --posix --silent -u -i - <<PATCH_EOF
 ${PATCH}
