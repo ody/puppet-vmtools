@@ -8,7 +8,7 @@
 #
 # All package patterns in each local repo need to currently be with in the
 # same resource.  This is due to the method of retrieving and cleaning
-# up packages; each resource delaration is going to issues a `rsync
+# up packages; each resource declaration is going to issues a `rsync
 # --delete` with means that you will only get packages from the final
 # resource that runs.  Suboptimal, yes and I think I am going to solve
 # this with a ruby manifest at some point.
@@ -63,6 +63,11 @@ define repobuild ($repopath, $repoer = "createrepo", $repoops = "-C --update -p"
     refreshonly => true,
   }
 
+  file { "/etc/yum.repos.d/${name}.repo":
+    content => "[${name}]\nname=Locally stored packages for ${name}\nbaseurl=file:///var/yum/${repopath}\nenabled=1\ngpgcheck=0",
+    require => Exec["{name}_build"],
+  }
+
 }
 
 class localpm {
@@ -78,6 +83,10 @@ class localpm {
                    "${base}/mirror/centos/5",
                    "${base}/mirror/centos/5/os",
                    "${base}/mirror/centos/5/updates",
+                   "${base}/mirror/puppetlabs",
+                   "${base}/mirror/puppetlabs/local",
+                   "${base}/mirror/puppetlabs/local/base",
+                   "${base}/mirror/puppetlabs/local/base/i386",
 
   File { mode => 644, owner => puppet, group => puppet }
 
@@ -87,7 +96,7 @@ class localpm {
   }
 
   pkgsync { "base_pkgs":
-    pkglist  => "httpd*\nperl-DBI*\nlibart_lgpl*\napr*\nruby-rdoc*\nntp*\n",
+    pkglist  => "httpd*\nperl-DBI*\nlibart_lgpl*\napr*\nruby-rdoc*\nntp*\nbluez-libs*\nbluez-utils*\n",
     repopath => "${base}/mirror/centos/5/os/i386",
     source   => "::centos/5/os/i386/CentOS/",
     notify   => Repobuild["base_local"]
@@ -105,18 +114,31 @@ class localpm {
   }
 
   repobuild { "updates_local":
-    repopatch => "${base}/mirror/centos/5/updates/i386",
+    repopath => "${base}/mirror/centos/5/updates/i386",
   }
 
   pkgsync { "epel_pkgs":
-    pkglist  => "rubygems*\nrubygem-rake*\nruby-RRDtool*\nrrdtool-ruby*\nrubygem-sqlite3-ruby*\nrubygem-rails*\nrubygem-activesupport*\nrubygem-actionmailer*\nrubygem-activeresource*\nrubygem-actionpack*\nrubygem-activerecord*\n",
-    repopath => "${base]/mirror/epel/5/local/i386",
+    pkglist  => "rubygems*\nrubygem-rake*\nruby-RRDtool*\nrrdtool-ruby*\nrubygem-sqlite3-ruby*\nrubygem-rails*\nrubygem-activesupport*\nrubygem-actionmailer*\nrubygem-activeresource*\nrubygem-actionpack*\nrubygem-activerecord*\nmysql*\nperl-DBD-MySQL*\nruby-mysql*\n",
+    repopath => "${base}/mirror/epel/5/local/i386",
     source   => "::epel/5/i386/",
     notify   => Repobuild["epel_local"]
   }
 
   repobuild { "epal_local":
-    repopatch => "${base}/mirror/epel/5/local/i386",
+    repopath => "${base}/mirror/epel/5/local/i386",
   }
+
+  pkgsync { "puppetlabs_pkgs":
+    pkglist  => "puppet-dashboard*\n",
+    repopath => "${base}/mirror/puppetlabs/local/base/i386",
+    source   => "::packages/yum/base",
+    server   => "yum.puppetlabs.com",
+    notify   => Repobuild["puppetlabs_local"],
+  }
+
+  repobuild { "puppetlabs_local":
+    repopath => "${base}/mirror/puppetlabs/local/base/i386",
+  }
+
 
 }
