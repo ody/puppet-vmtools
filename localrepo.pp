@@ -85,8 +85,7 @@ class localpm {
                    "${base}/mirror/centos/5/updates",
                    "${base}/mirror/puppetlabs",
                    "${base}/mirror/puppetlabs/local",
-                   "${base}/mirror/puppetlabs/local/base",
-                   "${base}/mirror/puppetlabs/local/base/i386", ]
+                   "${base}/mirror/puppetlabs/local/base", ]
 
   File { mode => 644, owner => puppet, group => puppet }
 
