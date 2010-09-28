@@ -123,7 +123,7 @@ class localpm {
     notify   => Repobuild["epel_local"]
   }
 
-  repobuild { "epal_local":
+  repobuild { "epel_local":
     repopath => "${base}/mirror/epel/5/local/i386",
   }
 
