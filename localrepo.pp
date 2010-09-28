@@ -130,7 +130,7 @@ class localpm {
   pkgsync { "puppetlabs_pkgs":
     pkglist  => "puppet-dashboard*\n",
     repopath => "${base}/mirror/puppetlabs/local/base/i386",
-    source   => "::packages/yum/base",
+    source   => "::packages/yum/base/",
     server   => "yum.puppetlabs.com",
     notify   => Repobuild["puppetlabs_local"],
   }
