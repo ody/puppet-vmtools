@@ -108,7 +108,7 @@ class localpm {
 
   pkgsync { "updates_pkgs":
     pkglist  => "mysql*\npostgresql-libs*\n",
-    repopath => "${base]/mirror/centos/5/updates/i386",
+    repopath => "${base}/mirror/centos/5/updates/i386",
     source   => "::centos/5/updates/i386/RPMS/",
     notify   => Repobuild["updates_local"]
   }
