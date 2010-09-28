@@ -64,7 +64,7 @@ define repobuild ($repopath, $repoer = "createrepo", $repoops = "-C --update -p"
   }
 
   file { "/etc/yum.repos.d/${name}.repo":
-    content => "[${name}]\nname=Locally stored packages for ${name}\nbaseurl=file:///var/yum/${repopath}\nenabled=1\ngpgcheck=0",
+    content => "[${name}]\nname=Locally stored packages for ${name}\nbaseurl=file:///${repopath}\nenabled=1\ngpgcheck=0",
     require => Exec["${name}_build"],
   }
 
