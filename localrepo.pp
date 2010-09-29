@@ -95,7 +95,7 @@ class localpm {
   }
 
   pkgsync { "base_pkgs":
-    pkglist  => "httpd*\nperl-DBI*\nlibart_lgpl*\napr*\nruby-rdoc*\nntp*\nbluez-libs*\nbluez-utils*\n",
+    pkglist  => "httpd*\nperl-DBI*\nlibart_lgpl*\napr*\nruby-rdoc*\nntp*\nbluez-libs*\nbluez-utils*\nperl-DBD-MySQL*\n",
     repopath => "${base}/mirror/centos/5/os/i386",
     source   => "::centos/5/os/i386/CentOS/",
     notify   => Repobuild["base_local"]
@@ -117,7 +117,7 @@ class localpm {
   }
 
   pkgsync { "epel_pkgs":
-    pkglist  => "rubygems*\nrubygem-rake*\nruby-RRDtool*\nrrdtool-ruby*\nrubygem-sqlite3-ruby*\nrubygem-rails*\nrubygem-activesupport*\nrubygem-actionmailer*\nrubygem-activeresource*\nrubygem-actionpack*\nrubygem-activerecord*\nmysql*\nperl-DBD-MySQL*\nruby-mysql*\n",
+    pkglist  => "rubygems*\nrubygem-rake*\nruby-RRDtool*\nrrdtool-ruby*\nrubygem-sqlite3-ruby*\nrubygem-rails*\nrubygem-activesupport*\nrubygem-actionmailer*\nrubygem-activeresource*\nrubygem-actionpack*\nrubygem-activerecord*\nmysql*\nruby-mysql*\n",
     repopath => "${base}/mirror/epel/5/local/i386",
     source   => "::epel/5/i386/",
     notify   => Repobuild["epel_local"]
