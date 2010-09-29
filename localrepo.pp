@@ -53,7 +53,7 @@ define pkgsync ($pkglist = $name, $source, $server = "mirrors.cat.pdx.edu", $syn
 }
 
 
-define repobuild ($repopath, $repoer = "createrepo", $repoops = "-C --update -p") {
+define repobuild ($repopath, $repoer = "createrepo", $repoops = "-C -p") {
 
   exec { "${name}_build":
     command     => "${repoer} ${repoops} ${repopath}",
