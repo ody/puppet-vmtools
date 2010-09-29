@@ -44,11 +44,12 @@ define pkgsync ($pkglist = $name, $source, $server = "mirrors.cat.pdx.edu", $syn
 
   exec { "get_${name}":
     command => "${syncer} ${syncops} --include-from=/tmp/${name}list  --exclude=* ${server}${source} ${repopath}/RPMS",
-    user    => puppet,
-    group   => puppet,
-    path    => "/usr/bin:/bin",
-    onlyif  => "${syncer} ${syncops} -n --include-from=/tmp/${name}list  --exclude=* ${server}${source} ${repopath}/RPMS | grep 'rpm$'",
-    require => [ File["${repopath}/RPMS"], File["/tmp/${name}list"] ],
+    user     => puppet,
+    group    => puppet,
+    path     => "/usr/bin:/bin",
+    timeount => "1200",
+    onlyifi  => "${syncer} ${syncops} -n --include-from=/tmp/${name}list  --exclude=* ${server}${source} ${repopath}/RPMS | grep 'rpm$'",
+    require  => [ File["${repopath}/RPMS"], File["/tmp/${name}list"] ],
   }
 }
 
