@@ -119,7 +119,7 @@ class localpm {
   pkgsync { "epel_pkgs":
     pkglist  => "rubygems*\nrubygem-rake*\nruby-RRDtool*\nrrdtool-ruby*\nrubygem-sqlite3-ruby*\nrubygem-rails*\nrubygem-activesupport*\nrubygem-actionmailer*\nrubygem-activeresource*\nrubygem-actionpack*\nrubygem-activerecord*\nmysql*\nruby-mysql*\n",
     repopath => "${base}/mirror/epel/5/local/i386",
-    source   => "::epel/5/i386/",
+    source   => "::fedora-epel/5/i386/",
     notify   => Repobuild["epel_local"]
   }
 
