@@ -96,7 +96,7 @@ class localpm {
   }
 
   pkgsync { "base_pkgs":
-    pkglist  => "httpd*\nperl-DBI*\nlibart_lgpl*\napr*\nruby-rdoc*\nntp*\nbluez-libs*\nbluez-utils*\nperl-DBD-MySQL*\nruby-ri*\nruby-irb*\nscreen*\nemacs*\nvim*\nlibXaw3d*\nlibgif*\nlibXpm*\nlibungif*\nlibXmu*\nxorg-x11-fonts-ISO8859-1-75dpi*\nmkfontdir*\nchkfontpath*\n",
+    pkglist  => "httpd*\nperl-DBI*\nlibart_lgpl*\napr*\nruby-rdoc*\nntp*\nbluez-libs*\nbluez-utils*\nperl-DBD-MySQL*\nruby-ri*\nruby-irb*\nscreen*\nemacs*\nvim*\nemacs-nox*\n",
     repopath => "${base}/mirror/centos/5/os/i386",
     source   => "::centos/5/os/i386/CentOS/",
     notify   => Repobuild["base_local"]
