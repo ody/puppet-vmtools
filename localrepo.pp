@@ -157,10 +157,12 @@ include localpm
 
 class puppetbase {
   # do some basic puppet setup
-  file {['/etc/puppet/', '/etc/puppet/modules/', '/etc/puppet/manifests/']: 
+  file {['/etc/puppetlabs/', '/etc/puppetlabs/puppet/',
+         '/etc/puppetlabs/puppet/modules', '/etc/puppetlabs/puppet/manifests'
+        ]: 
     ensure => directory
   }
-  file {'/etc/puppet/manifests/site.pp':
+  file {'/etc/puppetlabs/puppet/manifests/site.pp':
     content => ''
   }
   # TODO - install our maintenance version of Puppet using vcsrepo 
