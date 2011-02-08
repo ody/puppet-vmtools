@@ -108,7 +108,7 @@ class localpm {
   }
 
   pkgsync { "updates_pkgs":
-    pkglist  => "mysql*\npostgresql-libs*\n",
+    pkglist  => "kernel-headers*\nlibgomp*\ncpp*\ngcc*\nglibc*\nmysql*\npostgresql-libs*\n",
     repopath => "${base}/mirror/centos/5/updates/i386",
     source   => "::centos/5/updates/i386/RPMS/",
     notify   => Repobuild["updates_local"]
@@ -132,7 +132,7 @@ class localpm {
   }
 
   pkgsync { "puppetlabs_pkgs":
-    pkglist  => "puppet-dashboard*\nmcollective-common*\nmcollective-client*\nmcollective*\n",
+    pkglist  => "mcollective-common*\nmcollective-client*\nmcollective*\n",
     repopath => "${base}/mirror/puppetlabs/local/base/i386",
     source   => "::packages/yum/base/",
     server   => "yum.puppetlabs.com",
