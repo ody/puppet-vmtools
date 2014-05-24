@@ -96,7 +96,7 @@ class localpm {
   }
 
   pkgsync { "base_pkgs":
-    pkglist  => "httpd*\nperl-DBI*\nlibart_lgpl*\napr*\nruby-rdoc*\nntp*\nbluez-libs*\nbluez-utils*\nperl-DBD-MySQL*\nruby-ri*\nruby-irb*\nscreen*\nemacs*\nvim*\nemacs-nox*\n",
+    pkglist  => "perl-URI*\nsubversion*\nneon*\ngmp*\nhttpd*\nperl-DBI*\nlibart_lgpl*\napr*\nruby-rdoc*\nntp*\nbluez-libs*\nbluez-utils*\nperl-DBD-MySQL*\nruby-ri*\nruby-irb*\nscreen*\nemacs*\nvim*\nemacs-nox*\njava-1.6.0-openjdk*\nalsa-lib*\ngiflib*\njpackage-utils*\nlibXtst*\n",
     repopath => "${base}/mirror/centos/5/os/i386",
     source   => "::centos/5/os/i386/CentOS/",
     notify   => Repobuild["base_local"]
@@ -104,10 +104,11 @@ class localpm {
 
   repobuild { "base_local":
     repopath => "${base}/mirror/centos/5/os/i386",
+    notify   => Exec["makecache"],
   }
 
   pkgsync { "updates_pkgs":
-    pkglist  => "mysql*\npostgresql-libs*\n",
+    pkglist  => "php*\nkernel-headers*\nlibgomp*\ncpp*\ngcc*\nglibc*\nmysql*\npostgresql-libs*\n",
     repopath => "${base}/mirror/centos/5/updates/i386",
     source   => "::centos/5/updates/i386/RPMS/",
     notify   => Repobuild["updates_local"]
@@ -115,10 +116,11 @@ class localpm {
 
   repobuild { "updates_local":
     repopath => "${base}/mirror/centos/5/updates/i386",
+    notify   => Exec["makecache"],
   }
 
   pkgsync { "epel_pkgs":
-    pkglist  => "rubygems*\nrubygem-rake*\nruby-RRDtool*\nrrdtool-ruby*\nrubygem-sqlite3-ruby*\nrubygem-rails*\nrubygem-activesupport*\nrubygem-actionmailer*\nrubygem-activeresource*\nrubygem-actionpack*\nrubygem-activerecord*\nmysql*\nruby-mysql*\nrubygem-rspec*\n",
+    pkglist  => "rubygems*\nrubygem-rake*\nruby-RRDtool*\nrrdtool-ruby*\nrubygem-sqlite3-ruby*\nrubygem-rails*\nrubygem-activesupport*\nrubygem-actionmailer*\nrubygem-activeresource*\nrubygem-actionpack*\nrubygem-activerecord*\nmysql*\nruby-mysql*\nrubygem-rspec*\nrubygem-stomp*\n",
     repopath => "${base}/mirror/epel/5/local/i386",
     source   => "::fedora-epel/5/i386/",
     notify   => Repobuild["epel_local"]
@@ -126,10 +128,11 @@ class localpm {
 
   repobuild { "epel_local":
     repopath => "${base}/mirror/epel/5/local/i386",
+    notify   => Exec["makecache"],
   }
 
   pkgsync { "puppetlabs_pkgs":
-    pkglist  => "puppet-dashboard*\n",
+    pkglist  => "mcollective-common*\nmcollective-client*\nmcollective*\n",
     repopath => "${base}/mirror/puppetlabs/local/base/i386",
     source   => "::packages/yum/base/",
     server   => "yum.puppetlabs.com",
@@ -138,8 +141,31 @@ class localpm {
 
   repobuild { "puppetlabs_local":
     repopath => "${base}/mirror/puppetlabs/local/base/i386",
+    notify   => Exec["makecache"],
   }
 
+  exec { "makecache":
+    command     => "yum makecache",
+    path        => "/usr/bin",
+    refreshonly => true,
+    user        => root,
+    group       => root,
+  }
 }
 
 include localpm
+
+class puppetbase {
+  # do some basic puppet setup
+  file {['/etc/puppetlabs/', '/etc/puppetlabs/puppet/',
+         '/etc/puppetlabs/puppet/modules', '/etc/puppetlabs/puppet/manifests'
+        ]: 
+    ensure => directory
+  }
+  file {'/etc/puppetlabs/puppet/manifests/site.pp':
+    content => ''
+  }
+  # TODO - install our maintenance version of Puppet using vcsrepo 
+}
+
+include puppetbase
